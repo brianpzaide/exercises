@@ -2,14 +2,11 @@ def check_board_filled(board):
     n_r = len(board)
     n_c = len(board[0])
     total = 0
-    # print("from check_board_filled(board)")
     for r in range(n_r):
         total += sum(board[r])
-    # print(total)
     return True if total == n_r*n_c else False
 
 def getOptions(board, r, c):
-    # print("from getOptions(board, r, c)")
     moves = [(r-2, c+1), (r-1, c+2), (r+1, c+2), (r+2, c+1), (r+2, c-1), (r+1, c-2), (r-1, c-2), (r-2, c-1)]
     n_r = len(board)
     n_c = len(board[0])
@@ -18,20 +15,13 @@ def getOptions(board, r, c):
 
 
 def solve(board, row, col, path):
-    # print("from solve(board, row=0, col=0)")
-    # print("===============================")
-    # print_puzzle(board)
-    # print("===============================")
     if check_board_filled(board): 
         return True
     options = getOptions(board, row, col)
-    # print("row: {}, col: {}, options: {}".format(row, col, options))
     for r, c in options:
         if board[r][c] == 0:
             board[r][c] = 1
             path.append((r,c))
-            # print("row: {}, col: {}".format(row, col))
-            # print_puzzle(puzzle)
             if solve(board, r, c, path):
                 return True
             else:
@@ -67,7 +57,6 @@ def main():
     print("solving...")
     if solve(board,0,0, path):
         print("solved Hurray!")
-        # print(path)
         update_board(board, path)
         print_puzzle(board)
     else:

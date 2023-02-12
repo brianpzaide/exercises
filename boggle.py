@@ -1,5 +1,4 @@
-"TODO implement trie datastructure"
-from m_trie import *
+from trie import *
 
 def getOptions(board, r, c):
     options = [(r-1, c-1), (r-1, c), (r-1, c+1), (r, c+1), (r+1, c+1), (r+1, c), (r+1, c-1), (r, c-1)]

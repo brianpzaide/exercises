@@ -18,7 +18,6 @@ class MinPQ:
     def insert(self, x):
         (self.pq).append(x)
         self.swim(len(self.pq)-1)
-        # print("inserting {} ".format(x), self.pq)
         assert self.isMinHeap()
     
     def delmin(self):
@@ -54,7 +53,6 @@ class MinPQ:
         return self.isMinHeapOrdered(0)
     
     def isMinHeapOrdered(self, k):
-        # print(k, len(self.pq))
         if k >= (len(self.pq)-1)//2:
             return True
         left = 2*k + 1

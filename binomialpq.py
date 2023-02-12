@@ -113,14 +113,11 @@ class BinomialHeap:
         subtrees = head.get("tree").subtrees
         if len(subtrees) > 0:
             new_heap = BinomialHeap(children=subtrees)
-            # print("from line 113 new_heap = ")
-            # BinomialHeap.print_heap(new_heap)
 
             merged = new_heap if (prev_node is None) and (next_node is None) else BinomialHeap.merge(min_heap, new_heap)
 
             return min_value, merged
         else:
-            # print("from line 123 new_heap = null")
             return min_value, min_heap
     
     def merge(min_heap1, min_heap2):
@@ -235,10 +232,6 @@ class BinomialHeap:
             head = head.get("next")   
 
 def main():
-    # values = [i for i in range(8, 0, -1)]
-    # tree = BinomialTree.construct_via_minPQ(3, values)
-    # BinomialTree.print_binomial_tree(tree, "")
-
     values1 = [11,11,11,11,11,11,11,11,11,11]
     heap1 = BinomialHeap(fixed_head={"tree": BinomialTree.construct_via_minPQ(0, [11]), "next":None, "prev": None})
 

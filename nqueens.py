@@ -3,19 +3,13 @@ def check_diag(board, row, col, anti=False):
     width = len(board[0])
     diag_elems = []
     if anti:
-        # print("anti row: {}, col: {}: ".format(row, col))
         upper = list(zip(range(row, -1, -1), range(col, -1, -1)))
-        # print("upper: ", upper)
         lower = list(zip(range(row+1, height), range(col+1, width)))
-        # print("lower: ", lower)
         l = upper + lower
         diag_elems = [board[r][c] for r, c in l]
     else:
-        # print("main row: {}, col: {}: ".format(row, col))
         upper = list(zip(range(row, -1, -1), range(col, width)))
-        # print("upper: ", upper)
         lower = list(zip(range(row+1, height), range(col-1, -1, -1)))
-        # print("lower: ", lower)
         l = upper + lower
         
         diag_elems = [board[r][c] for r, c in l]
@@ -37,11 +31,8 @@ def getOptions(board, col):
 def solve(board, col):
     if col == len(board[0]): return True
     options = getOptions(board, col)
-    # print("row: {}, col: {}, options: {}".format(row, col, options))
     for row in options:
         board[row][col] = 1
-        # print("row: {}, col: {}".format(row, col))
-        # print_puzzle(puzzle)
         if solve(board, col+1):
             return True
         else:

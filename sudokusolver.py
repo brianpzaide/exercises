@@ -24,11 +24,8 @@ def solve(puzzle):
         for col in range(9):
             if puzzle[row][col] == 0:
                 options = getOptions(puzzle, row, col)
-                # print("row: {}, col: {}, options: {}".format(row, col, options))
                 for opt in options:
                     puzzle[row][col] = opt
-                    # print("row: {}, col: {}".format(row, col))
-                    # print_puzzle(puzzle)
                     if solve(puzzle):
                         return True
                     else:
