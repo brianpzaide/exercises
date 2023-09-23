@@ -11,27 +11,6 @@ import (
 	"testing"
 )
 
-/*
-func makeTempDir(fileContents, fileTypes, fileNames []string) error {
-
-	i := 0
-	dir, err := ioutil.TempDir("/home/brian/golearningstudio/testingFTA", "testingData")
-	if err != nil {
-		return err
-	}
-	fmt.Println(dir)
-	defer os.RemoveAll(dir) // clean up
-
-	for i < len(fileTypes); i++ {
-
-		if e := makeTempFile(dir, fileContents[i], fileTypes[i], n[i]); e != nil {
-			panic(e)
-		}
-		i++
-	}
-}
-*/
-
 const tempDir = ""
 
 func makeTempFile(dirName string, fileContent, fileName string) error {
