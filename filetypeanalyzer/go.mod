@@ -1,3 +1,3 @@
-module example.com/hunaidsav/FileTypeAnalyzer
+module example.com/FileTypeAnalyzer
 
 go 1.15
