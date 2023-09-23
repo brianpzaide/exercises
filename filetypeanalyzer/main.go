@@ -8,8 +8,8 @@ import (
 	"path"
 	"sync"
 
-	"example.com/hunaidsav/FileTypeAnalyzer/algorithms"
-	"example.com/hunaidsav/FileTypeAnalyzer/ds"
+	"example.com/FileTypeAnalyzer/algorithms"
+	"example.com/FileTypeAnalyzer/ds"
 )
 
 func doWork(path string, patterns ds.ByPriority) {

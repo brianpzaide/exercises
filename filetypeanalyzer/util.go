@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	"example.com/hunaidsav/FileTypeAnalyzer/ds"
+	"example.com/FileTypeAnalyzer/ds"
 )
 
 func getAllFileNames(folderPath string) []string {
