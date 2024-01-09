@@ -1,10 +1,7 @@
 package main
 
 import (
-	"bufio"
 	"context"
-	"fmt"
-	"os"
 	"time"
 )
 
@@ -269,9 +266,6 @@ func (rl *SlidingWindow) slidingWindowAlgorithm(ctx context.Context) {
 	}
 }
 
-func mainRateLimiters() {
-	sc := bufio.NewScanner(os.Stdin)
-	for sc.Scan() {
-		fmt.Println(sc.Text())
-	}
+func main() {
+
 }
