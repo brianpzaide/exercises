@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"time"
 )
 
@@ -76,9 +77,12 @@ func (rl *TokenBucket) tokenBucketAlgorithm(ctx context.Context) {
 		case <-ctx.Done():
 			return
 		case reqTokensCh := <-rl.allowCh:
+			fmt.Printf("tokens requested: %d, available tokens: %d ", reqTokensCh.tokens, rl.tokens)
+
 			currentTime := time.Now()
-			timePassed := rl.lastTime.Sub(currentTime).Seconds()
+			timePassed := currentTime.Sub(rl.lastTime).Seconds()
 			temp := rl.tokens + int(timePassed)*rl.tokensPerSecond
+			fmt.Printf("total new tokens: %d ", temp)
 			if rl.capacity <= temp {
 				rl.tokens = rl.capacity
 			} else {
@@ -133,8 +137,9 @@ func (rl *LeakyBucket) leakyBucketAlgorithm(ctx context.Context) {
 		case <-ctx.Done():
 			return
 		case reqTokensCh := <-rl.allowCh:
+			fmt.Printf("tokens requested: %d, available tokens: %d ", reqTokensCh.tokens, rl.tokens)
 			currentTime := time.Now()
-			timePassed := rl.lastTime.Sub(currentTime).Seconds()
+			timePassed := currentTime.Sub(rl.lastTime).Seconds()
 
 			leakedTokens := int(timePassed) * rl.leakRate
 
@@ -142,6 +147,7 @@ func (rl *LeakyBucket) leakyBucketAlgorithm(ctx context.Context) {
 			if temp < 0 {
 				temp = 0
 			}
+			fmt.Printf("total new tokens: %d ", temp)
 			if rl.capacity <= temp {
 				rl.tokens = rl.capacity
 			} else {
@@ -162,14 +168,14 @@ func (rl *LeakyBucket) leakyBucketAlgorithm(ctx context.Context) {
 }
 
 type FixedWindow struct {
-	limit      int
+	tokens     int
 	windowSize int
 	capacity   int
 	lastTime   time.Time
 	*RateLimiterBase
 }
 
-func NewFixedWindow(limit, windowSize, capacity int) RateLimiter {
+func NewFixedWindow(windowSize, capacity int) RateLimiter {
 	allowCh := make(chan requestTokensCh, LIMITER_CAPACITY)
 	ctx, cancelFunc := context.WithCancel(context.Background())
 	rlBase := &RateLimiterBase{
@@ -178,7 +184,7 @@ func NewFixedWindow(limit, windowSize, capacity int) RateLimiter {
 	}
 	rl := &FixedWindow{
 		RateLimiterBase: rlBase,
-		limit:           limit,
+		tokens:          capacity,
 		capacity:        capacity,
 		windowSize:      windowSize,
 		lastTime:        time.Now(),
@@ -196,22 +202,24 @@ func (rl *FixedWindow) fixedWindowAlgorithm(ctx context.Context) {
 		case <-ctx.Done():
 			return
 		case reqTokensCh := <-rl.allowCh:
+			fmt.Printf("tokens requested: %d, available tokens: %d ", reqTokensCh.tokens, rl.tokens)
 			currentTime := time.Now()
-			timePassed := int(rl.lastTime.Sub(currentTime).Seconds())
+			timePassed := int(currentTime.Sub(rl.lastTime).Seconds())
 
 			resp := false
 			if timePassed >= rl.windowSize {
 				rl.lastTime = currentTime
-				rl.limit = rl.capacity
+				rl.tokens = rl.capacity
 				resp = true
 			} else {
-				if rl.limit > 0 {
-					rl.limit -= 1
+				if rl.tokens > 0 {
+					rl.tokens -= 1
 					resp = true
 				} else {
 					resp = false
 				}
 			}
+			fmt.Printf("total new tokens: %d ", rl.tokens)
 			reqTokensCh.resCh <- resp
 		}
 	}
@@ -252,11 +260,12 @@ func (rl *SlidingWindow) slidingWindowAlgorithm(ctx context.Context) {
 		case reqTokensCh := <-rl.allowCh:
 			currentTime := time.Now()
 			rl.timeStamps = append(rl.timeStamps, currentTime)
+			fmt.Printf("total requests: %d, limit: %d ", reqTokensCh.tokens, rl.limit)
 
-			for len(rl.timeStamps) > 0 && rl.timeStamps[0].Before(currentTime.Add(-rl.windowSize)) {
+			for len(rl.timeStamps) > 0 && rl.timeStamps[0].Before(currentTime.Add(-rl.windowSize*time.Second)) {
 				rl.timeStamps = rl.timeStamps[1:]
 			}
-
+			fmt.Printf("total requests after sliding: %d ", len(rl.timeStamps))
 			resp := false
 			if len(rl.timeStamps) <= rl.limit {
 				resp = true
@@ -267,5 +276,58 @@ func (rl *SlidingWindow) slidingWindowAlgorithm(ctx context.Context) {
 }
 
 func main() {
+	// rl := NewTokenBucket(10, 5, 5)
+	// var ok bool
+	// for i := 0; i < 10; i++ {
+	// 	ok = rl.Allow(1)
+	// 	if ok {
+	// 		fmt.Println("access granted")
+	// 	} else {
+	// 		fmt.Println("access denied")
+	// 		time.Sleep(1 * time.Second)
+	// 	}
 
+	// }
+	// rl.Stop()
+
+	// rl := NewLeakyBucket(10, 20)
+	// var ok bool
+	// for i := 0; i < 10; i++ {
+	// 	ok = rl.Allow(1)
+	// 	if ok {
+	// 		fmt.Println("access granted")
+	// 	} else {
+	// 		fmt.Println("access denied")
+	// 	}
+	// 	time.Sleep(1 * time.Second)
+	// }
+	// rl.Stop()
+
+	// rl := NewFixedWindow(1, 5)
+	// var ok bool
+	// for i := 0; i < 10; i++ {
+	// 	ok = rl.Allow(1)
+	// 	if ok {
+	// 		fmt.Println("access granted")
+	// 	} else {
+	// 		fmt.Println("access denied")
+	// 		time.Sleep(1 * time.Second)
+	// 	}
+
+	// }
+	// rl.Stop()
+
+	rl := NewSlidingWindow(5, 1)
+	var ok bool
+	for i := 0; i < 10; i++ {
+		ok = rl.Allow(1)
+		if ok {
+			fmt.Println("access granted")
+		} else {
+			fmt.Println("access denied")
+			time.Sleep(1 * time.Second)
+		}
+
+	}
+	rl.Stop()
 }
