@@ -145,19 +145,21 @@ func (rl *LeakyBucket) leakyBucketAlgorithm(ctx context.Context) {
 
 			temp := rl.tokens - leakedTokens
 			if temp < 0 {
-				temp = 0
-			}
-			fmt.Printf("total new tokens: %d ", temp)
-			if rl.capacity <= temp {
-				rl.tokens = rl.capacity
+				rl.tokens = 0
 			} else {
 				rl.tokens = temp
 			}
+			fmt.Printf("total new tokens: %d ", rl.tokens)
+			// if rl.capacity <= temp {
+			// 	rl.tokens = rl.capacity
+			// } else {
+			// 	rl.tokens = temp
+			// }
 			rl.lastTime = currentTime
 			resp := false
 
-			if reqTokensCh.tokens <= rl.tokens {
-				rl.tokens -= reqTokensCh.tokens
+			if reqTokensCh.tokens <= (rl.capacity - rl.tokens) {
+				rl.tokens += reqTokensCh.tokens
 				resp = true
 			} else {
 				resp = false
@@ -290,18 +292,19 @@ func main() {
 	// }
 	// rl.Stop()
 
-	// rl := NewLeakyBucket(10, 20)
-	// var ok bool
-	// for i := 0; i < 10; i++ {
-	// 	ok = rl.Allow(1)
-	// 	if ok {
-	// 		fmt.Println("access granted")
-	// 	} else {
-	// 		fmt.Println("access denied")
-	// 	}
-	// 	time.Sleep(1 * time.Second)
-	// }
-	// rl.Stop()
+	rl := NewLeakyBucket(10, 1)
+	var ok bool
+	for i := 0; i < 10; i++ {
+		ok = rl.Allow(2)
+		if ok {
+			fmt.Println("access granted")
+		} else {
+			fmt.Println("access denied")
+			time.Sleep(1 * time.Second)
+		}
+
+	}
+	rl.Stop()
 
 	// rl := NewFixedWindow(1, 5)
 	// var ok bool
@@ -317,17 +320,17 @@ func main() {
 	// }
 	// rl.Stop()
 
-	rl := NewSlidingWindow(5, 1)
-	var ok bool
-	for i := 0; i < 10; i++ {
-		ok = rl.Allow(1)
-		if ok {
-			fmt.Println("access granted")
-		} else {
-			fmt.Println("access denied")
-			time.Sleep(1 * time.Second)
-		}
+	// rl := NewSlidingWindow(5, 1)
+	// var ok bool
+	// for i := 0; i < 10; i++ {
+	// 	ok = rl.Allow(1)
+	// 	if ok {
+	// 		fmt.Println("access granted")
+	// 	} else {
+	// 		fmt.Println("access denied")
+	// 		time.Sleep(1 * time.Second)
+	// 	}
 
-	}
-	rl.Stop()
+	// }
+	// rl.Stop()
 }
