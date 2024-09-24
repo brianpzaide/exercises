@@ -1,8 +1,6 @@
 # exercises
 
 This repository is a collection of various algorithms implemented for learning purposes.
-
-* ```ratelimiters```: Contains concurrent-safe implementations of Token Bucket, Leaky Bucket, Fixed Window, and Sliding Window algorithms in Go (Golang).
   
 * ```chatclientserver```: Includes implementations of a chat server and chat client using Go concurrency.
 
