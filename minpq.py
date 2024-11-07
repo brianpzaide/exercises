@@ -11,55 +11,44 @@ class MinPQ:
 
     def min(self):
         if len(self.pq) == 0:
-            raise Exception("Priority queue underflow")
+            raise Exception("priority queue is empty")
         else:
             return self.pq[0]
     
     def insert(self, x):
         (self.pq).append(x)
-        self.swim(len(self.pq)-1)
-        assert self.isMinHeap()
+        self.rise(len(self.pq)-1)
     
     def delmin(self):
         n = len(self.pq) 
         if n == 0:
-            raise Exception("Priority queue underflow")
+            raise Exception("priority queue is empty")
         x = self.pq[0]
         self.pq[0], self.pq[n-1] = self.pq[n-1], self.pq[0]
         self.pq = self.pq[:n-1]
         self.sink(0)
-        assert self.isMinHeap()
         return x
     
-    def swim(self, k):
+    def rise(self, k):
         pq = self.pq
-        while k > 0 and self.greater((k-1)//2, k):
-            pq[(k-1)//2], pq[k] = pq[k], pq[(k-1)//2]
-            k = (k-1)//2
+        parent = (k-1)//2
+        while k > 0 and self.greater(parent, k):
+            pq[parent], pq[k] = pq[k], pq[parent]
+            k = parent
 
     def sink(self, k):
         pq = self.pq
         n = len(pq)
-        while k < (n-1)//2 and (self.greater(k, 2*k+1) or self.greater(k, 2*k+2)):
-            m = 2*k+2 if self.greater(2*k+1, 2*k+2) else 2*k+1
-            pq[k], pq[m] = pq[m], pq[k]
-            k = m
-
-    def isMinHeap(self):
-        n = len(self.pq)
-        for i in range(n):
-            if self.pq[i] is None: return False
-        
-        return self.isMinHeapOrdered(0)
-    
-    def isMinHeapOrdered(self, k):
-        if k >= (len(self.pq)-1)//2:
-            return True
-        left = 2*k + 1
-        right = 2*k + 2
-        if self.greater(k, left): return False
-        if self.greater(k, right): return False
-        return self.isMinHeapOrdered(left) and self.isMinHeapOrdered(right)
+        while 2*k+1 < n:
+            left = 2*k+1
+            right = 2*k+2
+            smallest = left
+            if right < n and self.greater(left, right):
+                smallest = right
+            if self.greater(smallest, k):
+                break
+            pq[k], pq[smallest] = pq[smallest], pq[k]
+            k = smallest 
 
     def greater(self, a, b):
         pq = self.pq
