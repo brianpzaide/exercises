@@ -57,5 +57,5 @@ if __name__ == "__main__":
     print("=====Recursive=====")
     tree_recursive(root, "", "")
     print()
-    print("=====Iterativr=====")
+    print("=====Iterative=====")
     tree_iterative(root)
